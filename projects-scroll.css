@@ -1,9 +1,15 @@
 /* Assembly controls: distance = scroll speed; x, width and height = alignment. */
 .portfolio-main{position:relative}
-.scroll-conduit{position:absolute;left:var(--trace-x,15%);top:0;width:2px;height:var(--trace-span,0px);z-index:1;pointer-events:none}
+.scroll-conduit{position:absolute;left:var(--trace-x,2.2%);top:0;width:2px;height:var(--trace-span,0px);z-index:1;pointer-events:none}
 .conduit-trace{display:block;width:2px;height:100%;transform:scaleY(var(--trace-progress,0));transform-origin:top center;background:linear-gradient(180deg,#c08aff,rgba(146,96,255,.56) 17%,rgba(146,96,255,.4) 82%,#c08aff);box-shadow:0 0 5px #9754ff,0 0 12px rgba(110,62,244,.32);opacity:.58;will-change:transform}
 .conduit-origin{position:absolute;top:0;left:0;width:2px;height:var(--hero-line-height,0px);transform:scaleY(var(--trace-origin-progress,0));transform-origin:top center;background:#c998ff;box-shadow:0 0 8px #9e5dff,0 0 18px rgba(138,67,255,.65);opacity:.8;will-change:transform}
 .conduit-head{position:absolute;left:50%;top:var(--trace-head-y,0px);width:8px;height:20px;border-radius:50%;transform:translate(-50%,-50%);opacity:var(--trace-head-opacity,0);background:#e9d6ff;filter:blur(3px);box-shadow:0 0 22px #9f5eff;will-change:top,opacity}
+.conduit-node{position:absolute;left:-6px;width:14px;height:18px;clip-path:polygon(0 0,68% 0,100% 27%,100% 100%,30% 100%,0 73%);background:linear-gradient(135deg,#271839,#100d1b 60%,#442267);box-shadow:inset 2px 0 #b97aff;opacity:var(--node-opacity,0);transform:translateY(-50%);will-change:opacity}
+.conduit-node:after{content:"";position:absolute;inset:3px 5px 3px 6px;background:#c68cff;box-shadow:0 0 8px #9954ff}
+.conduit-node-one{top:25%;--node-opacity:var(--node-one,0)}
+.conduit-node-two{top:54%;--node-opacity:var(--node-two,0);transform:translateY(-50%) scaleX(-1)}
+.conduit-node-three{top:83%;--node-opacity:var(--node-three,0)}
+.conduit-bridge{position:absolute;left:0;bottom:0;width:var(--bridge-width,0px);height:2px;transform:scaleX(var(--bridge-progress,0));transform-origin:left center;background:linear-gradient(90deg,#a96aff 0%,rgba(168,105,255,.48) 40%,#d4a7ff 100%);box-shadow:0 0 9px rgba(155,81,255,.6);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 100%,0 100%);will-change:transform}
 .projects-scene{--assembly-distance:680px;--pole-x:31%;--pole-width:58px;--pole-height:100%;--pole-glow:rgba(117,61,255,.55);--pole-cut:0%;--neon-cut:0%;--guide-opacity:1;--segment-one:1;--segment-two:1;--segment-three:1;--segment-one-y:0px;--segment-two-y:0px;--segment-three-y:0px;--scan-opacity:0;--scan-y:0%;--ambient-shift:0px;--ambient-opacity:.28;position:relative;height:calc(clamp(550px,100vh,650px) + var(--assembly-distance))}
 .projects-scene .projects{position:sticky;top:0;height:clamp(550px,100vh,650px);min-height:0}
 .projects-art{isolation:isolate}

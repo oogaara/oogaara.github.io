@@ -73,9 +73,16 @@ if (assemblyScene && !window.matchMedia('(prefers-reduced-motion: reduce)').matc
       const head = Math.max(0, Math.min(span, window.innerHeight * .78 - mainRect.top));
       const heroHeight = portfolioMain.querySelector('.hero').offsetHeight;
       const conduitStyle = conduit.style;
-      conduitStyle.setProperty('--trace-x', `${Math.round(neonLine.getBoundingClientRect().left - mainRect.left + 2)}px`);
+      const gutterX = Math.max(10, Math.round(portfolioMain.clientWidth * .022));
+      const poleX = neonLine.getBoundingClientRect().left - mainRect.left + 2;
+      conduitStyle.setProperty('--trace-x', `${gutterX}px`);
+      conduitStyle.setProperty('--bridge-width', `${Math.max(0, Math.round(poleX - gutterX))}px`);
       conduitStyle.setProperty('--trace-span', `${Math.round(span)}px`);
       conduitStyle.setProperty('--trace-progress', (head / span).toFixed(5));
+      conduitStyle.setProperty('--bridge-progress', phase(head / span, .96, 1).toFixed(3));
+      conduitStyle.setProperty('--node-one', phase(head / span, .25, .265).toFixed(3));
+      conduitStyle.setProperty('--node-two', phase(head / span, .54, .555).toFixed(3));
+      conduitStyle.setProperty('--node-three', phase(head / span, .83, .845).toFixed(3));
       conduitStyle.setProperty('--hero-line-height', `${heroHeight}px`);
       conduitStyle.setProperty('--trace-origin-progress', Math.min(1, head / heroHeight).toFixed(5));
       conduitStyle.setProperty('--trace-head-y', `${Math.round(head)}px`);
