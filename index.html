@@ -1,165 +1,120 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LearningSx | Cyber Research Terminal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050507">
+  <meta name="description" content="Portfólio de s6msx: cibersegurança, pentest, redes, CTFs e pesquisa.">
+  <title>s6msx — Cybersecurity Portfolio</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="effects.css">
+  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="projects-scroll.css">
 </head>
 <body>
-  <div class="scanlines"></div>
-  <div class="binary-rain" id="binaryRain"></div>
-  <header>
-    <div class="ascii-header">
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣯⣾⣿⡿⢟⣿⠛⠉⠩⠁⠀⠀⡟⠁⠀⣀⠀⠀⠈⠙⠿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠈⠢⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣾⡿⠟⠁⣐⡮⠁⠀⡐⠀⠀⠀⠀⢰⣅⠈⠀⠒⠄⡀⠀⠀⠀⠙⠿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠐⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣰⡿⠋⠀⠀⠀⡬⠁⠀⡐⠀⠀⠀⠀⠀⠀⠟⢂⠀⠀⠀⠈⠂⡀⠀⠀⠀⠈⠙⢿⣿⣻⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠈⢳⡀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣲⠏⠀⠀⠀⠠⡙⠀⠀⢀⠁⠀⠀⠀⠀⠀⠀⠐⡈⠑⡀⠀⠀⠀⠈⠢⡀⠀⠀⠀⠀⠙⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⢗⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠬⠁⠀⢀⠈⠀⢠⠁⠀⠀⡈⠀⠀⠀⠀⠀⠀⠀⠀⠐⡀⠈⢄⠀⠀⠀⠀⠀⢄⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠈⠦⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠁⠀⠀⠂⠀⠀⡄⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠈⢂⠀⠀⠀⠀⠀⢂⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣗⡀⠀⠀⠀⠀⠀⠈⣇⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⣨⠁⠀⠀⠄⠀⠀⢀⠀⠀⠀⢰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢂⠀⠀⠀⠀⠀⢂⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⡰⠀⠀⠀⠀⠀⠀⢩⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⢠⡇⠀⠀⡘⠀⠀⠀⢸⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⣣⠀⠀⠀⠀⠀⠀⠀⠀⢆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⡇⢃⠀⠀⠀⠀⠀⠸⢆⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⣨⠀⠀⢀⠁⠀⠀⠀⠀⠀⠀⠀⣼⠀⠀⠀⠀⠀⠀⢁⢀⠀⠀⠀⠀⠀⠀⠀⠈⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⡇⠋⡀⠀⠀⠀⠀⠀⣏⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⢠⡇⠀⠀⡈⠀⠀⠀⠀⠀⠀⠰⢰⣿⡆⠀⠀⠀⠀⠀⠀⠄⢂⠀⠐⡀⠀⠀⠀⠀⠈⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⠈⢡⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⢨⠀⠀⢀⠁⠀⠀⠀⠀⢀⠀⠆⣿⣿⣧⠀⠠⠀⠐⠀⠀⠘⡀⠠⠀⠐⣀⠀⠀⠀⠀⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⠀⠈⡄⠀⠀⠀⠀⠘⠆⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⣿⠀⠀⠘⠀⠀⠀⠀⠀⠸⠰⢸⣿⣿⣿⣆⠀⢂⠀⠀⠀⠀⠐⡀⠐⠀⠐⠑⠀⠀⠈⠄⠐⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⠀⠀⢁⠀⠀⠀⠀⠀⡆⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⡊⠀⠀⡀⠀⠀⠀⠀⠀⢐⢳⣾⣿⣿⣿⣿⡌⠌⣆⠀⠀⠀⠀⠐⠀⠈⠂⠈⢀⠢⡀⠀⢂⢡⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠀⠀⠘⠀⠀⠀⠀⠀⠣⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⡅⠀⠀⡇⠀⡀⠀⠀⠀⢰⣧⣿⣿⣿⣿⣿⣿⣄⠚⢆⠀⠀⠀⠀⠈⢄⠀⠑⠀⠁⡀⠀⠀⠂⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⡆⠀⠀⡆⡆⡔⠄⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⣿⠀⠃⢸⢀⡇⠀⠀⠠⠈⣻⣿⣿⣿⣿⣿⣿⣿⣦⠙⡧⡀⠀⠀⠀⠀⠀⡀⠀⠀⠈⠀⡀⢀⢲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⢸⠆⠀⠀⡇⢰⠀⢳⠁⢷⠗⡀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⢹⢰⠀⠈⣸⢰⠀⠀⠀⠒⡹⣿⣿⣿⣿⣿⣿⢿⣿⣷⣜⣮⣦⠀⠀⠀⠀⠈⠊⠀⠀⠀⢄⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⢤⢸⠀⠀⠀⡇⢸⢰⣾⢠⠆⠁⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠸⢸⠆⠀⢡⢀⠃⠀⠀⢀⠱⡹⣿⣿⣿⣿⣯⣿⣼⣹⣻⣮⣿⣿⡦⡀⠐⠄⠀⠈⠢⡢⢀⠀⠠⡣⡀⠀⠀⠀⠀⠀⠀⠀⡿⢸⠀⠀⠀⡇⠸⢘⠙⣾⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⢸⣾⣯⣶⠀⢸⠎⠄⡀⠈⡷⣼⣌⢻⣿⣿⣿⠿⢻⠩⠁⠀⠈⠑⢖⠠⠔⢄⠀⢌⠐⠨⠢⠁⠣⠂⠰⢠⣄⠀⠀⠀⠀⢠⡙⡈⠀⠀⠀⣌⢀⢸⠀⠏⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⢹⣁⠱⡇⢸⢰⡘⢇⢄⢡⠈⢿⣷⠟⠋⠀⠀⠀⢅⠀⠀⠀⠀⠀⠁⠀⠀⠈⠂⡝⡰⢠⠄⣐⡆⠀⢀⠀⠈⠀⠂⢠⢲⢡⠃⠀⠀⣰⠂⣸⡆⠘⠃⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠙⠦⢩⣆⢼⢡⠈⠂⠱⢕⠌⡅⠀⢀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠂⠁⠊⠔⣣⣀⣀⣀⠸⠀⣠⢏⡲⡉⠀⠠⢠⡏⢠⣗⠁⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢧⢯⣛⣥⠀⠀⠂⠈⠩⢊⠀⠀⠀⠀⠀⢀⡀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢁⣵⠉⠁⠀⠄⡆⡊⣜⡚⡔⠀⢠⡵⣿⢠⠯⠂⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢊⡎⠙⢓⠄⠀⢆⠀⠑⠱⢄⠀⠀⠀⠁⢃⡀⠀⠉⠀⠀⠀⠀⠀⠀⢀⢐⠚⠹⠀⡀⣨⢰⡀⢨⡣⡞⣠⡰⠉⢀⣭⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢧⠤⠢⠽⠦⢈⠑⢦⢀⠳⡅⡠⡀⠀⠀⠀⠀⠀⠁⠀⠀⠀⡠⣐⠁⡂⢀⢃⣔⣔⣇⢛⢣⡜⣷⠮⡧⠃⠈⢐⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⡆⠀⢠⠈⠑⠊⣾⣺⢳⣿⠙⢲⣄⡀⠀⢀⣀⣤⡔⢻⡔⠃⠁⣀⡔⢹⡏⢹⣿⠁⠙⣷⣟⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⠀⠀⠀⡄⣴⠾⠟⣴⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⠟⠃⣿⣿⡅⠘⠈⠉⠉⠁⠀⠀⠀⠃⠛⠃⢸⣷⣼⡏⠀⠀⠈⠻⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠀⠀⠀⣠⠤⢓⣵⣾⣿⣷⣄⠈⢘⠲⣠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣷⣶⣶⣶⣤⣤⣤⣤⣶⣶⣶⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⢀⡤⠓⠁⣰⡿⣽⢾⣟⣿⣿⣧⡄⡘⠢⡟⣧⣠⡀⠀⠀⢀⡀⣀⣴⣁⠟⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-      ⠟⠁⢀⣾⢯⣟⣽⣻⣞⡿⣿⣿⣿⣮⣳⣜⣻⣿⣷⠒⠊⠉⠁⣠⣴⣶⣦⣤⣙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣗⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⢤⣤⣠⠀⠀⠀⠀⠀
-      ⠀⡠⢟⣞⣯⣞⣷⣻⣾⣿⣿⣿⣿⣿⣿⣾⣷⣿⢿⣵⣤⣶⣿⣿⡿⣿⣿⣿⣿⣾⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡴⣠⠀⢀⣠⠠⠒⠒⠒⠒⠋⣰⣿⡿⣿⣷⣴⠀⠀⠀
-      ⢀⠝⣸⣿⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢯⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡐⣉⠯⣄⠀⠀⠀⠀⠀⣴⣿⢯⣿⢷⣿⣿⣷⡂⠀
-      ⢈⢠⣿⣽⣻⣿⢿⣯⣿⣽⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣵⣫⡽⣷⠀⢀⣠⣾⡿⣯⣿⣾⣿⣿⣟⣿⣿⡄
-      ⠀⣼⣷⣻⣿⣾⣿⣯⣿⣯⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⡽⣧⠛⠿⣿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿
-      ⢠⣿⡽⣟⣷⣿⣿⣿⣷⣿⡿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣯⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣬⣟⣯⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-    
-    </div>
-    <div class="terminal-line">
-      <span class="glitch" data-text="[SYSTEM READY] Terminal de pesquisa em cibersegurança inicializado">[SYSTEM READY] root@s6msx</span><span class="blink">_</span>
-    </div>
+  <div class="noise" aria-hidden="true"></div>
+  <svg class="fx-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="plasma-goo" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo"/><feMerge><feMergeNode in="goo"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  </svg>
+  <header class="site-header" id="topo">
+    <a class="wordmark" href="#topo" aria-label="s6msx, voltar ao início">s6msx<span class="spark">✦</span></a>
+    <nav class="desktop-nav" aria-label="Navegação principal">
+      <a class="active" href="index.html">INÍCIO</a>
+      <a href="sobre.html">SOBRE</a>
+      <a href="pesquisa.html">PESQUISA</a>
+      <a href="projetos.html">PROJETOS</a>
+      <a href="contato.html">CONTATO</a>
+    </nav>
+    <div class="header-end"><span class="status-dot"></span><span>SECURE SESSION ACTIVE</span></div>
+    <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span><span></span></button>
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação móvel" hidden>
+      <a href="index.html">Início</a><a href="sobre.html">Sobre</a><a href="pesquisa.html">Pesquisa</a><a href="projetos.html">Projetos</a><a href="contato.html">Contato</a>
+    </nav>
   </header>
-  
-  <nav>
-    <ul>
-      <li><a href="about.html">[ABOUT]</a></li>
-      <li><a href="pesquisas.html">[RESEARCH]</a></li>
-      <li><a href="papers.html">[PAPERS]</a></li>
-      <li><a href="projetos.html">[PROJECTS]</a></li>
-      <li><a href="#contato">[CONTACT]</a></li>
-    </ul>
-  </nav>
-  
+
   <main>
-    <section class="section" id="sobre">
-      <div class="terminal-window">
-        <div class="terminal-header">
-          <span>system_profile.exe</span>
-        </div>
-        <h2>// Whoami</h2>
-        <p>
-          Profissional de cibersegurança com foco em redes, pentest em infraestrutura e CTFs. Analista de segurança, estudante de Redes de Computadores e apaixonado por tecnologia. 
-        </p>
-      </div>
+    <section class="hero" aria-label="Abertura do portfólio">
+      <div class="hero-eyes" role="img" aria-label="Olhos com reflexos digitais em roxo e azul"></div>
+      <div class="hero-shade"></div>
+      <div class="hero-kicker mono"><span class="line"></span> CYBERSECURITY / RESEARCH / OFFENSE</div>
+      <div class="hero-side mono">&gt; OBSERVAR<br>&gt; ENTENDER<br>&gt; TESTAR<br>&gt; PROTEGER</div>
+      <div class="hero-index mono">001 <span></span> PORTFOLIO.EXE</div>
+      <div class="hero-scroll mono">SCROLL TO EXPLORE <span>↓</span></div>
     </section>
-    
-    <div class="ascii-divider">
-      RESEARCH DIVISION
-    </div>
-    
-    <section class="section" id="pesquisas">
-      <h2>// Pesquisas Ativas</h2>
-      <div class="articles">
-        <div class="article">
-          <div class="article-date">[2025-04-07]</div>
-          <h3 class="article-title">Satellite Security</h3>
-          <p class="article-desc">
-            Pesquisa sobre vulnerabilidades em sistemas de satelites.
-          </p>
-          <div class="terminal-line">
-            <span>tags: #nasa #starlink #satellitesSec</span>
-          </div>
-        </div>
-          <div class="ascii-arts">
-            .-.      _______                .  '  *   .  . '
-            {}``; |==|_______D                 .  * * -+-  
-            / ('        /|\                .    * .    '  *
-        (  /  |        / | \                   * .  ' .  . 
-         \(_)_]]      /  |  \               *   *  .   .
-                                              '   *
-          </div>
-        </div>
+
+    <section class="intro section-frame" id="sobre" aria-labelledby="intro-title">
+      <div class="grid-overlay" aria-hidden="true"></div>
+      <div class="fx-layer intro-fx" aria-hidden="true"><span class="plasma plasma-intro-left"></span><span class="plasma plasma-intro-right"></span><div class="liquid-field"><span class="liquid-ribbon shape-drop liquid-intro"></span><span class="liquid-drop drop-intro"></span></div></div>
+      <div class="intro-copy">
+        <p class="eyebrow"><span class="accent-square"></span> S6MSX / WHOAMI</p>
+        <h1 id="intro-title">BEYOND<br>THE <em>FIREWALL.</em></h1>
+        <p class="intro-lead">Segurança começa onde a curiosidade encontra o método.</p>
+        <p class="intro-body">Analista de cibersegurança e estudante de Redes de Computadores, com foco em pentest de infraestrutura, redes e CTFs. Exploro sistemas para compreender suas falhas e ajudar a construir defesas melhores.</p>
+        <a class="outline-button" href="sobre.html">CONHEÇA MINHA TRAJETÓRIA <span>↗</span></a>
+        <div class="intro-tags mono"><span>01 / OFFENSIVE SECURITY</span><span>02 / NETWORKS</span><span>03 / CTF</span></div>
       </div>
-    </section>
-    
-    <div class="ascii-divider">
-      PUBLICATION NETWORK
-    </div>
-    
-    <section class="section" id="artigos">
-      <h2>// Pentest Tricks</h2>
-      <div class="articles">
-        
-        <div class="article">
-          <div class="article-date">[2025-04-15]</div>
-          <h3 class="article-title">Active Directory</h3>
-          <p class="article-desc">
-            Active directory exploitation techniques and tools.
-          </p>
-          <div class="terminal-line">
-            <span class="prompt">$</span>
-            <span>DOI: 10.1109/ACCESS.2025.1234567</span>
-          </div>
-        </div>
+      <div class="portrait-wrap">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <img class="portrait" src="01.png" alt="Figura de estética futurista vista de cima, em composição editorial" fetchpriority="high">
+        <div class="portrait-cross cross-a">+</div><div class="portrait-cross cross-b">+</div>
       </div>
+      <aside class="intro-aside">
+        <div class="aside-card image-card"><img src="eyes.png" alt="Detalhe de olhos com efeito digital"><span class="corner-mark">↗</span></div>
+        <div class="aside-label mono">DIFFERENT PERSPECTIVE.<br>SAME CURIOSITY. <small>002</small></div>
+        <div class="aside-card mini-card"><div class="mini-icon">⌁</div><strong>THINK LIKE<br>AN ATTACKER.</strong><span>DEFEND WITH INTENT.</span></div>
+        <div class="aside-label mono">DETAILS THAT MATTER. <small>003</small></div>
+      </aside>
+      <div class="intro-bottom mono"><span>RESEARCH / PRACTICE / SHARING KNOWLEDGE</span><span>NETWORKED WORLD <b>✦</b> DIGITAL SPACE</span></div>
     </section>
-    
-    <div class="ascii-divider">
-      CODE REPOSITORY
+
+    <section class="manifesto" aria-label="Manifesto">
+      <div class="manifesto-bg"></div>
+      <div class="fx-layer manifesto-fx" aria-hidden="true"><span class="plasma plasma-manifesto"></span><div class="liquid-field"><span class="liquid-ribbon shape-pool liquid-manifesto"></span><span class="liquid-drop drop-manifesto"></span></div></div>
+      <span class="mono manifesto-index">002 — NEW PERSPECTIVES</span>
+      <div><p class="eyebrow">A MENTE POR TRÁS DO TERMINAL</p><h2>QUESTION EVERYTHING<span>.</span></h2><p class="mono">Cada camada revela uma nova possibilidade.</p></div>
+      <span class="mono manifesto-right">THREAT SURFACE<br>→ RESEARCH SURFACE</span>
+    </section>
+
+    <section class="work section-frame" id="pesquisa" aria-labelledby="work-title">
+      <div class="fx-layer work-fx" aria-hidden="true"><span class="plasma plasma-work"></span></div>
+      <div class="section-top mono"><span>003 / FIELD NOTES</span><span>ANÁLISE EM MOVIMENTO</span></div>
+      <div class="work-heading"><div><p class="eyebrow"><span class="accent-square"></span> WHAT I EXPLORE</p><h2 id="work-title">RESEARCH &amp;<br><em>OPERATIONS.</em></h2></div><p>Pesquisa aplicada, prática ofensiva e aprendizado contínuo em ambientes reais e simulados.</p></div>
+      <div class="work-grid">
+        <a class="feature-card feature-research" href="pesquisa.html#satelites">
+          <span class="card-number mono">01 / RESEARCH</span><div class="feature-visual"><img class="feature-icon" src="icon-satellite.svg" alt="" aria-hidden="true"><div class="radar radar-a"></div><div class="radar radar-b"></div></div>
+          <div class="feature-content"><span class="mono">ACTIVE INVESTIGATION</span><h3>Satellite<br>Security</h3><p>Exploração de vulnerabilidades e superfícies de ataque em sistemas de satélites.</p><span class="card-arrow">↗</span></div>
+        </a>
+        <a class="feature-card feature-pentest" href="pesquisa.html#active-directory">
+          <span class="card-number mono">02 / OFFENSE</span><div class="feature-visual visual-code" aria-hidden="true"><img class="feature-icon" src="icon-windows.svg" alt=""><span class="code-line">root@s6msx:~# nmap -sV target</span></div>
+          <div class="feature-content"><span class="mono">PENTEST TRICKS</span><h3>Active<br>Directory</h3><p>Técnicas, ferramentas e documentação para testes de infraestrutura.</p><span class="card-arrow">↗</span></div>
+        </a>
+        <a class="feature-card feature-ctf" href="sobre.html#ctf">
+          <span class="card-number mono">03 / CHALLENGES</span><div class="feature-visual visual-ctf"><img class="feature-icon" src="icon-flag.svg" alt="" aria-hidden="true"><span class="mono">CAPTURE THE FLAG<br>FORENSICS / WEB / CRYPTO</span></div>
+          <div class="feature-content"><span class="mono">PRACTICE MAKES PROGRESS</span><h3>CTF &amp;<br>Blue Team</h3><p>Desafios de segurança ofensiva, forense e análise de tráfego.</p><span class="card-arrow">↗</span></div>
+        </a>
+      </div>
+      <div class="work-footer mono"><span>RESEARCH IS A CONTINUOUS PROCESS.</span><a href="pesquisa.html">VER TODAS AS PESQUISAS ↗</a></div>
+    </section>
+
+    <section class="page-section home-posts" id="publicacoes" aria-labelledby="posts-title"><div class="page-container"><div class="section-heading"><div><p class="eyebrow"><span class="accent-square"></span> FROM THE ARCHIVE</p><h2 id="posts-title">POSTS &amp; <em>PAPERS.</em></h2></div><p>Publicações e notas sobre segurança ofensiva, sistemas de satélites e infraestrutura.</p></div><div class="post-grid"><article class="post-card"><div class="post-meta mono"><span>12 MAR 2025</span><span>01 / SATELLITE SECURITY</span></div><div class="post-icon"><img src="icon-satellite.svg" alt=""></div><h3>Vulnerability Analysis in Satellite Communication Systems</h3><p>Resumo sobre protocolos, autenticação e vulnerabilidades em sistemas de comunicação por satélite.</p><div class="post-tags mono"><span>#satelite</span><span>#cybersec</span><span>#space</span></div><a class="card-link" href="satellite-security.html">LER RESUMO ↗</a></article><article class="post-card"><div class="post-meta mono"><span>15 ABR 2025</span><span>02 / ACTIVE DIRECTORY</span></div><div class="post-icon"><img src="icon-windows.svg" alt=""></div><h3>Advanced Active Directory Penetration Testing Techniques</h3><p>Resumo sobre métodos de teste, movimento lateral e escalonamento de privilégios em Active Directory.</p><div class="post-tags mono"><span>#activedirectory</span><span>#pentest</span><span>#windows</span></div><a class="card-link" href="active-directory.html">LER RESUMO ↗</a></article></div><a class="page-footer-link" href="pesquisa.html#publicacoes">VER ARQUIVO DE PUBLICAÇÕES ↗</a></div></section>
+
+    <div class="projects-scene" data-assembly-scene>
+    <section class="projects section-frame" id="projetos" aria-labelledby="projects-title">
+      <div class="fx-layer projects-fx" aria-hidden="true"><span class="plasma plasma-projects"></span><div class="liquid-field"><span class="liquid-ribbon shape-flare liquid-projects"></span><span class="liquid-drop drop-projects"></span></div></div>
+      <div class="projects-art"><div class="assembly-pole" aria-hidden="true"><span class="pole-guides"></span><span class="pole-core"></span><span class="pole-face"></span><span class="pole-segment pole-segment-one"></span><span class="pole-segment pole-segment-two"></span><span class="pole-segment pole-segment-three"></span><span class="pole-neon"></span><span class="pole-scan"></span></div><img src="02.png" alt="Personagem futurista encostada em um poste tecnológico enquanto trabalha em um notebook"><span class="art-caption mono">BUILD / BREAK / LEARN / REPEAT</span></div>
+      <div class="projects-copy"><p class="eyebrow"><span class="accent-square"></span> CODE REPOSITORY</p><h2 id="projects-title">TOOLS FOR<br>THE <em>CURIOUS.</em></h2><p>Desenvolvo ferramentas e scripts para automatizar tarefas de segurança. Uso Python, C/C++, Bash e PowerShell para transformar investigação em prática.</p><div class="skill-list mono"><span>PYTHON</span><span>C / C++</span><span>BASH</span><span>POWERSHELL</span></div><a class="outline-button" href="projetos.html">EXPLORAR PROJETOS <span>↗</span></a></div>
+    </section>
     </div>
-    
-    <section class="section" id="projetos">
-      <h2>// Projetos Ativos</h2>
-      <div class="articles">
-        <div class="article">
-          <div class="article-date">[GITHUB]</div>
-          <h3 class="article-title">Programming</h3>
-          <p class="article-desc">
-            Desenvolvimento de ferramentas e scripts para automação de tarefas de segurança.
-          </p>
-          <div class="terminal-line">
-            <span class="prompt">$</span>
-            <span>xxxxxxxxxx</span>
-          </div>
-        </div>
-      
-    </section> 
+
+    <section class="contact section-frame" id="contato" aria-labelledby="contact-title">
+      <div class="contact-glow"></div><p class="eyebrow"><span class="accent-square"></span> OPEN CHANNEL / CONTACT</p><h2 id="contact-title">LET'S CONNECT<span>.</span></h2><p>Tem uma pesquisa, desafio ou ideia em cibersegurança? Vamos conversar.</p><div class="contact-links"><a href="contato.html">CONTATO ↗</a><a href="https://github.com/oogaara" target="_blank" rel="noopener noreferrer">GITHUB ↗</a></div><div class="contact-coords mono">SECURE CONNECTION ESTABLISHED <span>●</span> S6MSX / 2026</div>
+    </section>
   </main>
-  
-  <footer>
-    <div class="ascii-divider">
-      END TRANSMISSION
-    </div>
-    <p>[SECURE SESSION] Última atualização: 20/04/2025</p>
-    <p>Todos os canais criptografados com AES-256 | Terminal protegido por honeypots</p>
-    <div class="terminal-line">
-      <span class="prompt"></span>
-      <span></span>
-    </div>
-  </footer>
-  <script src="js/script.js"></script>
+  <footer class="site-footer"><a class="wordmark" href="index.html">s6msx<span class="spark">✦</span></a><span class="mono">CURIOUS BY NATURE. SECURE BY DESIGN.</span><a href="#topo" class="mono">BACK TO TOP ↑</a></footer>
+  <script src="script.js"></script>
 </body>
 </html>
