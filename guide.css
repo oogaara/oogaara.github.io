@@ -26,7 +26,6 @@
 .guide-card{display:flex;flex-direction:column;min-height:220px;background:#100d15;border:1px solid rgba(163,109,211,.28);padding:25px 27px;clip-path:polygon(0 0,88% 0,100% 14%,100% 100%,12% 100%,0 86%);transition:background .2s,transform .2s}
 .guide-card:hover{background:#1c1027;transform:translateY(-3px)}
 .guide-card .mono{color:#c970ff;font-size:9px}
-.guide-card-image{display:block;width:100%;height:120px;object-fit:cover;object-position:center;background:#0b0910;border:1px solid rgba(163,109,211,.2);margin:16px 0 0;filter:saturate(.82) brightness(.78)}
 .guide-card h2{font-size:30px;letter-spacing:-.06em;margin:20px 0 9px}
 .guide-card p{font-size:13px;line-height:1.6;color:#bdb4c5;margin:0 0 20px}
 .guide-card span:last-child{margin-top:auto;color:#d49cf3;font:10px 'DM Mono',monospace}
