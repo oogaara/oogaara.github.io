@@ -27,6 +27,8 @@ sections.forEach(section => observer.observe(section));
 
 const assemblyScene = document.querySelector('[data-assembly-scene]');
 if (assemblyScene && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const conduit = document.querySelector('.scroll-conduit');
+  const portfolioMain = document.querySelector('.portfolio-main');
   const clamp = value => Math.max(0, Math.min(1, value));
   const phase = (value, start, end) => clamp((value - start) / (end - start));
   let frame = 0;
@@ -43,9 +45,9 @@ if (assemblyScene && !window.matchMedia('(prefers-reduced-motion: reduce)').matc
 
     const core = phase(progress, .16, .78);
     const neon = phase(progress, .34, .94);
-    const first = phase(progress, .29, .49);
-    const second = phase(progress, .48, .68);
-    const third = phase(progress, .66, .87);
+    const third = phase(progress, .24, .44);
+    const second = phase(progress, .47, .67);
+    const first = phase(progress, .67, .86);
     const scan = neon > 0 && neon < 1 ? Math.sin(neon * Math.PI) : 0;
     const style = assemblyScene.style;
 
@@ -59,9 +61,29 @@ if (assemblyScene && !window.matchMedia('(prefers-reduced-motion: reduce)').matc
     style.setProperty('--segment-two-y', `${Math.round((1 - second) * 35)}px`);
     style.setProperty('--segment-three-y', `${Math.round((1 - third) * 38)}px`);
     style.setProperty('--scan-opacity', scan.toFixed(3));
-    style.setProperty('--scan-y', `${Math.round((1 - neon) * 100)}%`);
+    style.setProperty('--scan-y', `${Math.round(neon * 100)}%`);
     style.setProperty('--ambient-shift', `${Math.round((progress - .5) * 64)}px`);
     style.setProperty('--ambient-opacity', (.18 + progress * .16).toFixed(3));
+
+    if (conduit && portfolioMain) {
+      const pole = assemblyScene.querySelector('.assembly-pole');
+      const neonLine = assemblyScene.querySelector('.pole-neon');
+      const mainRect = portfolioMain.getBoundingClientRect();
+      const span = Math.max(1, assemblyScene.offsetTop + pole.offsetTop);
+      const head = Math.max(0, Math.min(span, window.innerHeight * .78 - mainRect.top));
+      const heroHeight = portfolioMain.querySelector('.hero').offsetHeight;
+      const conduitStyle = conduit.style;
+      conduitStyle.setProperty('--trace-x', `${Math.round(neonLine.getBoundingClientRect().left - mainRect.left + 2)}px`);
+      conduitStyle.setProperty('--trace-span', `${Math.round(span)}px`);
+      conduitStyle.setProperty('--trace-progress', (head / span).toFixed(5));
+      conduitStyle.setProperty('--hero-line-height', `${heroHeight}px`);
+      conduitStyle.setProperty('--trace-origin-progress', Math.min(1, head / heroHeight).toFixed(5));
+      conduitStyle.setProperty('--trace-head-y', `${Math.round(head)}px`);
+      const headOpacity = head < span
+        ? head < 360 || head > span - 140 ? .72 : .18
+        : Math.max(0, 1 - progress * 5);
+      conduitStyle.setProperty('--trace-head-opacity', String(headOpacity));
+    }
   };
 
   const requestAssembly = () => {

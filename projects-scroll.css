@@ -1,12 +1,17 @@
 /* Assembly controls: distance = scroll speed; x, width and height = alignment. */
-.projects-scene{--assembly-distance:680px;--pole-x:31%;--pole-width:58px;--pole-height:108%;--pole-glow:rgba(117,61,255,.55);--pole-cut:0%;--neon-cut:0%;--guide-opacity:1;--segment-one:1;--segment-two:1;--segment-three:1;--segment-one-y:0px;--segment-two-y:0px;--segment-three-y:0px;--scan-opacity:0;--scan-y:0%;--ambient-shift:0px;--ambient-opacity:.28;position:relative;height:calc(clamp(550px,100vh,650px) + var(--assembly-distance))}
+.portfolio-main{position:relative}
+.scroll-conduit{position:absolute;left:var(--trace-x,15%);top:0;width:2px;height:var(--trace-span,0px);z-index:1;pointer-events:none}
+.conduit-trace{display:block;width:2px;height:100%;transform:scaleY(var(--trace-progress,0));transform-origin:top center;background:linear-gradient(180deg,#c08aff,rgba(146,96,255,.56) 17%,rgba(146,96,255,.4) 82%,#c08aff);box-shadow:0 0 5px #9754ff,0 0 12px rgba(110,62,244,.32);opacity:.58;will-change:transform}
+.conduit-origin{position:absolute;top:0;left:0;width:2px;height:var(--hero-line-height,0px);transform:scaleY(var(--trace-origin-progress,0));transform-origin:top center;background:#c998ff;box-shadow:0 0 8px #9e5dff,0 0 18px rgba(138,67,255,.65);opacity:.8;will-change:transform}
+.conduit-head{position:absolute;left:50%;top:var(--trace-head-y,0px);width:8px;height:20px;border-radius:50%;transform:translate(-50%,-50%);opacity:var(--trace-head-opacity,0);background:#e9d6ff;filter:blur(3px);box-shadow:0 0 22px #9f5eff;will-change:top,opacity}
+.projects-scene{--assembly-distance:680px;--pole-x:31%;--pole-width:58px;--pole-height:100%;--pole-glow:rgba(117,61,255,.55);--pole-cut:0%;--neon-cut:0%;--guide-opacity:1;--segment-one:1;--segment-two:1;--segment-three:1;--segment-one-y:0px;--segment-two-y:0px;--segment-three-y:0px;--scan-opacity:0;--scan-y:0%;--ambient-shift:0px;--ambient-opacity:.28;position:relative;height:calc(clamp(550px,100vh,650px) + var(--assembly-distance))}
 .projects-scene .projects{position:sticky;top:0;height:clamp(550px,100vh,650px);min-height:0}
 .projects-art{isolation:isolate}
 .projects-art:before{content:"";position:absolute;inset:-15%;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 33% 50%,rgba(72,43,157,var(--ambient-opacity)),transparent 45%);transform:translate3d(0,var(--ambient-shift),0)}
 .projects-scene .projects-art img{position:relative;z-index:3;height:100%;object-position:center bottom}
 .projects-art .art-caption{z-index:4}
-.assembly-pole{position:absolute;z-index:1;left:var(--pole-x);top:-4%;width:var(--pole-width);height:var(--pole-height);pointer-events:none;perspective:500px;transform:rotateY(-13deg);transform-origin:right center;filter:drop-shadow(-12px 8px 17px rgba(0,0,0,.6))}
-.pole-core,.pole-face,.pole-neon{position:absolute;inset:0;clip-path:inset(var(--pole-cut) 0 0 0);will-change:clip-path}
+.assembly-pole{position:absolute;z-index:1;left:var(--pole-x);top:0;width:var(--pole-width);height:var(--pole-height);pointer-events:none;perspective:500px;transform:rotateY(-13deg);transform-origin:right center;filter:drop-shadow(-12px 8px 17px rgba(0,0,0,.6))}
+.pole-core,.pole-face,.pole-neon{position:absolute;inset:0;clip-path:inset(0 0 var(--pole-cut) 0);will-change:clip-path}
 .pole-core{background:linear-gradient(90deg,#09080f 0%,#1d1530 20%,#0a0912 57%,#312049 87%,#09070e 100%);border-left:1px solid rgba(164,92,255,.48);box-shadow:inset 9px 0 14px rgba(107,47,175,.14),inset -5px 0 13px #000}
 .pole-face{left:auto;width:12px;background:linear-gradient(90deg,#311948,#0b0912);transform:skewY(-9deg) translateX(8px);border-right:1px solid rgba(165,94,245,.24)}
 .pole-guides{position:absolute;inset:0;opacity:var(--guide-opacity);background:linear-gradient(90deg,transparent 2px,rgba(155,84,255,.42) 3px,transparent 4px),linear-gradient(90deg,transparent calc(100% - 3px),rgba(115,84,211,.4) calc(100% - 2px),transparent calc(100% - 1px));mask-image:repeating-linear-gradient(0deg,transparent 0 48px,#000 49px 57px,transparent 58px 101px)}
@@ -14,8 +19,9 @@
 .pole-segment-one{bottom:7%;height:18%}
 .pole-segment-two{bottom:39%;height:19%;transform:translate3d(0,var(--segment-two-y),0);opacity:var(--segment-two)}
 .pole-segment-three{top:10%;height:15%;transform:translate3d(0,var(--segment-three-y),0);opacity:var(--segment-three)}
-.pole-neon{z-index:3;left:76%;right:auto;width:4px;background:linear-gradient(90deg,#a65bff,#f3ddff 57%,#8059ff);box-shadow:0 0 9px #a04cff,0 0 23px var(--pole-glow),0 0 45px rgba(100,48,211,.34);clip-path:inset(var(--neon-cut) 0 0 0)}
+.pole-neon{z-index:3;left:76%;right:auto;width:4px;background:linear-gradient(90deg,#a65bff,#f3ddff 57%,#8059ff);box-shadow:0 0 9px #a04cff,0 0 23px var(--pole-glow),0 0 45px rgba(100,48,211,.34);clip-path:inset(0 0 var(--neon-cut) 0)}
 .pole-scan{position:absolute;z-index:4;left:72%;top:var(--scan-y);width:12px;height:14px;border-radius:50%;opacity:var(--scan-opacity);background:#f4e7ff;filter:blur(4px);box-shadow:0 0 16px #c06cff,0 0 34px #693cff;transform:translateY(-50%)}
 @media(max-width:900px){.projects-scene{height:auto}.projects-scene .projects{position:relative;top:auto;height:auto;min-height:550px}.projects-scene .projects-art img{height:550px}.assembly-pole{--pole-x:29%;--pole-width:52px}}
-@media(max-width:760px){.projects-scene .projects{min-height:0}.projects-scene .projects-art img{height:400px}.assembly-pole{--pole-x:27%;--pole-width:39px;--pole-height:108%}.pole-segment{left:-5px;width:calc(100% + 10px)}}
-@media(prefers-reduced-motion:reduce){.projects-scene{--pole-cut:0%!important;--neon-cut:0%!important;--guide-opacity:1!important;--segment-one:1!important;--segment-two:1!important;--segment-three:1!important;--scan-opacity:0!important;--ambient-shift:0px!important}.pole-core,.pole-face,.pole-neon,.pole-segment{will-change:auto}}
+@media(max-width:760px){.projects-scene .projects{min-height:0}.projects-scene .projects-art img{height:400px}.assembly-pole{--pole-x:27%;--pole-width:39px;--pole-height:100%}.pole-segment{left:-5px;width:calc(100% + 10px)}}
+@media(max-width:760px){.conduit-trace{opacity:.32;box-shadow:0 0 5px rgba(151,84,255,.55)}.conduit-head{filter:blur(2px)}.intro-copy .outline-button{background:rgba(5,5,7,.8)}}
+@media(prefers-reduced-motion:reduce){.scroll-conduit{display:none}.projects-scene{--pole-cut:0%!important;--neon-cut:0%!important;--guide-opacity:1!important;--segment-one:1!important;--segment-two:1!important;--segment-three:1!important;--scan-opacity:0!important;--ambient-shift:0px!important}.pole-core,.pole-face,.pole-neon,.pole-segment{will-change:auto}}
