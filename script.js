@@ -29,6 +29,8 @@ const assemblyScene = document.querySelector('[data-assembly-scene]');
 if (assemblyScene && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const conduit = document.querySelector('.scroll-conduit');
   const portfolioMain = document.querySelector('.portfolio-main');
+  const contact = document.querySelector('.contact');
+  const footer = document.querySelector('.site-footer');
   const clamp = value => Math.max(0, Math.min(1, value));
   const phase = (value, start, end) => clamp((value - start) / (end - start));
   let frame = 0;
@@ -90,6 +92,23 @@ if (assemblyScene && !window.matchMedia('(prefers-reduced-motion: reduce)').matc
         ? head < 360 || head > span - 140 ? .72 : .18
         : Math.max(0, 1 - progress * 5);
       conduitStyle.setProperty('--trace-head-opacity', String(headOpacity));
+
+      if (contact && footer) {
+        const contactRect = contact.getBoundingClientRect();
+        const footerRect = footer.getBoundingClientRect();
+        const circuitX = Math.max(10, Math.round(contact.clientWidth * .022));
+        const sourceX = neonLine.getBoundingClientRect().left - contactRect.left + 2;
+        const contactProgress = clamp((window.innerHeight - contactRect.top) / Math.max(1, contactRect.height));
+        const footerProgress = clamp((window.innerHeight - footerRect.top) / Math.max(1, footerRect.height));
+        contact.style.setProperty('--circuit-gutter', `${circuitX}px`);
+        contact.style.setProperty('--circuit-join-width', `${Math.max(0, Math.round(sourceX - circuitX))}px`);
+        contact.style.setProperty('--circuit-entry-progress', phase(contactProgress, 0, .18).toFixed(3));
+        contact.style.setProperty('--circuit-spine-progress', phase(contactProgress, .13, .9).toFixed(3));
+        contact.style.setProperty('--circuit-junction-opacity', phase(contactProgress, .88, 1).toFixed(3));
+        footer.style.setProperty('--circuit-progress', footerProgress.toFixed(3));
+        footer.style.setProperty('--circuit-branch-progress', phase(footerProgress, .42, 1).toFixed(3));
+        footer.style.setProperty('--circuit-node-opacity', (phase(footerProgress, .7, 1) * .8).toFixed(3));
+      }
     }
   };
 

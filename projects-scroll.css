@@ -10,6 +10,17 @@
 .conduit-node-two{top:54%;--node-opacity:var(--node-two,0);transform:translateY(-50%) scaleX(-1)}
 .conduit-node-three{top:83%;--node-opacity:var(--node-three,0)}
 .conduit-bridge{position:absolute;left:0;bottom:0;width:var(--bridge-width,0px);height:2px;transform:scaleX(var(--bridge-progress,0));transform-origin:left center;background:linear-gradient(90deg,#a96aff 0%,rgba(168,105,255,.48) 40%,#d4a7ff 100%);box-shadow:0 0 9px rgba(155,81,255,.6);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 100%,0 100%);will-change:transform}
+.contact>.contact-circuit:not(.contact-glow){position:absolute;inset:0;z-index:0;pointer-events:none}
+.contact>:not(.contact-glow):not(.contact-circuit){z-index:1}
+.circuit-entry{position:absolute;top:0;left:var(--circuit-gutter,2.2%);width:var(--circuit-join-width,18%);height:1px;background:linear-gradient(90deg,rgba(157,92,255,.58),rgba(183,127,255,.45));transform:scaleX(var(--circuit-entry-progress,0));transform-origin:right center;box-shadow:0 0 8px rgba(151,78,255,.38)}
+.circuit-spine{position:absolute;top:0;bottom:0;left:var(--circuit-gutter,2.2%);width:1px;background:linear-gradient(180deg,rgba(168,99,255,.7),rgba(151,82,255,.32) 70%,rgba(184,116,255,.65));transform:scaleY(var(--circuit-spine-progress,0));transform-origin:top center;box-shadow:0 0 8px rgba(154,85,255,.38)}
+.circuit-junction{position:absolute;bottom:-3px;left:calc(var(--circuit-gutter,2.2%) - 3px);width:7px;height:7px;clip-path:polygon(0 0,70% 0,100% 30%,100% 100%,30% 100%,0 70%);background:#c18aff;opacity:var(--circuit-junction-opacity,0);box-shadow:0 0 10px #9957ff}
+.site-footer{position:relative;isolation:isolate}
+.site-footer>a,.site-footer>span{position:relative;z-index:1}
+.footer-circuit{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0;opacity:.72}
+.circuit-route{fill:none;stroke:#a76eff;stroke-width:1;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--circuit-progress,0));filter:drop-shadow(0 0 4px rgba(154,83,255,.4))}
+.circuit-route-branch{stroke:#8053bf;stroke-width:.8;stroke-dashoffset:calc(1 - var(--circuit-branch-progress,0))}
+.footer-circuit circle{fill:#d2aaff;opacity:var(--circuit-node-opacity,0);filter:drop-shadow(0 0 5px #a35bff)}
 .projects-scene{--assembly-distance:680px;--pole-x:31%;--pole-width:58px;--pole-height:100%;--pole-glow:rgba(117,61,255,.55);--pole-cut:0%;--neon-cut:0%;--guide-opacity:1;--segment-one:1;--segment-two:1;--segment-three:1;--segment-one-y:0px;--segment-two-y:0px;--segment-three-y:0px;--scan-opacity:0;--scan-y:0%;--ambient-shift:0px;--ambient-opacity:.28;position:relative;height:calc(clamp(550px,100vh,650px) + var(--assembly-distance))}
 .projects-scene .projects{position:sticky;top:0;height:clamp(550px,100vh,650px);min-height:0}
 .projects-art{isolation:isolate}
@@ -30,4 +41,4 @@
 @media(max-width:900px){.projects-scene{height:auto}.projects-scene .projects{position:relative;top:auto;height:auto;min-height:550px}.projects-scene .projects-art img{height:550px}.assembly-pole{--pole-x:29%;--pole-width:52px}}
 @media(max-width:760px){.projects-scene .projects{min-height:0}.projects-scene .projects-art img{height:400px}.assembly-pole{--pole-x:27%;--pole-width:39px;--pole-height:100%}.pole-segment{left:-5px;width:calc(100% + 10px)}}
 @media(max-width:760px){.conduit-trace{opacity:.32;box-shadow:0 0 5px rgba(151,84,255,.55)}.conduit-head{filter:blur(2px)}.intro-copy .outline-button{background:rgba(5,5,7,.8)}}
-@media(prefers-reduced-motion:reduce){.scroll-conduit{display:none}.projects-scene{--pole-cut:0%!important;--neon-cut:0%!important;--guide-opacity:1!important;--segment-one:1!important;--segment-two:1!important;--segment-three:1!important;--scan-opacity:0!important;--ambient-shift:0px!important}.pole-core,.pole-face,.pole-neon,.pole-segment{will-change:auto}}
+@media(prefers-reduced-motion:reduce){.scroll-conduit{display:none}.contact-circuit{--circuit-entry-progress:1!important;--circuit-spine-progress:1!important;--circuit-junction-opacity:1!important}.site-footer{--circuit-progress:1!important;--circuit-branch-progress:1!important;--circuit-node-opacity:.7!important}.projects-scene{--pole-cut:0%!important;--neon-cut:0%!important;--guide-opacity:1!important;--segment-one:1!important;--segment-two:1!important;--segment-three:1!important;--scan-opacity:0!important;--ambient-shift:0px!important}.pole-core,.pole-face,.pole-neon,.pole-segment{will-change:auto}}
