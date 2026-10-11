@@ -37,7 +37,6 @@
 .guide-figure{margin:26px 0 10px;max-width:860px;border:1px solid rgba(163,109,211,.28);background:#0e0b12;padding:12px}
 .guide-figure img{display:block;width:100%;height:auto;max-height:560px;object-fit:contain;background:#fff}
 .guide-figure figcaption{padding:12px 4px 3px;color:#ada3b6;font:10px/1.6 'DM Mono',monospace}
-.guide-source{margin-top:36px}
 .source-note{margin:18px 0;border:1px solid rgba(163,109,211,.25);background:#100d15}
 .source-note summary{cursor:pointer;padding:16px 20px;color:#dfc4f0;font:13px 'DM Mono',monospace;list-style:none}
 .source-note summary::-webkit-details-marker{display:none}

